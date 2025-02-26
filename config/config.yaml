@@ -1,0 +1,22 @@
+model:
+
+  OPENAI_API_KEY: ""
+  OPENAI_BASE_URL: ""
+  ZHIPUAI_API_KEY: ""
+  llama3.1-8b-instruct: "meta-llama/Llama-3.1-8B-Instruct"
+  llama-3.1-70b-instruct: "meta-llama/Llama-3.1-70B-Instruct"
+  glm4-9b-chat: "THUDM/glm-4-9b-chat"
+  glm4-9b-chat-dpo: "" 
+  bge-large-en-v1.5: "BAAI/bge-large-en-v1.5"
+
+es:
+  url: "http://localhost:9200"
+
+prompt:
+
+  prefrag: "Answer the following questions as best you can. When you need to search more information, You have access to the following tools:\n\n{% for tool in tools %}\n{{ tool.__name__ }}: {{ tool.introduction() }}\n{% endfor %}\n\nQuestion: the input question you must answer\nUse the following format for each step:\n\nThought: you should always think about what to do\nAction: the action to take, should be one of [{{ tools | map(attribute='__name__') | join(', ') }}] if it needed（Make sure to use the exact tool name from the list）\nAction Input: the input of the action\nObservation: the result of the action\n... (this Thought/Action/Action Input/Observation should not be repeated more than {{max_step}} times. If it exceeds {{max_step}} times, the final answer should be given directly.)\nThought: I now know the final answer to the original question\nFinal Answer: {{answer_format}}\n\nSelf-Evaluation: Describe the accuracy of the Final Answer by choosing one of [CORRECT / PARTIALLY CORRECT / INCORRECT]. \nExplanation: Briefly explain why you chose the label. \nImprovement Suggestions: Optionally suggest how the answer could be improved if needed (omit this if the answer is correct). \n### Note: Ensure the Final Answer strictly follows the format: {{answer_format}}\n\nBegin!\n\nQuestion: {{ question }}\n{{ thought }}"
+  prefer_retrieval: 'You are tasked with evaluating whether newly retrieved information provides additional insights or value for answering an original question. Follow these steps carefully:\n\n1. Compare the new information (labeled as "New information") against the information already obtained (labeled as "Information already obtained").\n2. Determine if the "New information" includes any new details or elements that directly contribute to solving the "Original question."\n3. Output the result as a dictionary in the following JSON format: \n```json{{"analysis": "<your analysis here>","status": "<True or False>"}}```\nKey points:\n- "New information" is considered helpful if it adds relevant details that were previously absent and assists in answering the original question.\n- Irrelevant, redundant, or already-known information should result in "status": "False".\nOriginal question: {question}\n\nInformation already obtained: {existed_info}\n\nNew information: {observation}\n\nYour task: Judging based on the above content, has new, useful information been provided?'
+  answer_format: 'Provide the most concise answer to the original input question. Give me only the final answer without including any other words'
+  base_answer_format: '\nBased on the above information, answer this question:\n{question}\nGive me only the answer without including any other words.\n\nAnswer:'
+  bio_answer_format: 'ANSWER "yes" OR "no" ONLY (You have to choose the most likely option)'
+  bio_base_answer_format: '\nBased on the above information, answer this question:\n{question}\n\nANSWER "yes" OR "no" ONLY (You have to choose the most likely option).\nAnswer:'
