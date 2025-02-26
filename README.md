@@ -60,7 +60,7 @@ python index.py --dataset musique
 1. Prepare DPO training dataset:
 ```bash
 # Generate DPO training data with specified dataset and device
-python pre_dpo_data.py --output_path ../data/dpo_data --score_model glm4-plus --device 0,1,2,3
+python pre_dpo_data.py --output_path ../data/dpo_data --score_model glm-4-plus --device 0,1,2,3
 
 # After data generation, use process_data.ipynb to customize the proportion of different data types in the generated training set
 ```

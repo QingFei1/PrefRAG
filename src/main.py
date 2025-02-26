@@ -19,7 +19,7 @@ from vllm import LLM, SamplingParams
 from retry import retry
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model', type=str, choices=["gpt-4o-mini-2024-07-18","glm4-plus","llama3.1-8b-instruct","glm4-9b-chat","glm4-9b-chat-dpo","llama-3.1-70b-instruct"], default='glm4', help="Specify the model to use for inference")
+parser.add_argument('--model', type=str, choices=["gpt-4o-mini-2024-07-18","glm-4-plus","llama3.1-8b-instruct","glm4-9b-chat","glm4-9b-chat-dpo","llama-3.1-70b-instruct"], default='glm4', help="Specify the model to use for inference")
 parser.add_argument('--MaxClients', type=int, default=1, help="Maximum number of concurrent clients")
 parser.add_argument('--retrieve_method', type=str, default="es", help="Retrieval method to use: elasticsearch (es) or embedding-based (emb)")
 parser.add_argument('--retrieve_top_k', type=int, default=5, help="Number of top documents to retrieve for each query")
@@ -107,14 +107,9 @@ class Search_Engine:
     
     @retry((Exception), delay=1, backoff=2, max_delay=10,jitter=(1, 10))  
     def call(self,query):
-        ports=[10805,10806,10807,10808,10809,10810]
-        port=random.sample(ports,1)[0]
-        proxy = f"http://127.0.0.1:{port}"
         query=str(query).strip('"')
-        
-        print(f"Using proxy: {proxy},问题：{query}")
         try:
-            with DDGS(timeout=60,proxy=proxy, verify=False) as ddgs:
+            with DDGS(timeout=60, proxy=None, verify=False) as ddgs:
                 result=[f"""title:{r["title"]}\ncontent:{r["body"]}""" for r in ddgs.text(query, region='wt-wt', safesearch='off',max_results=self.topk)]
         except DuckDuckGoSearchException as e:
             if "return None" in str(e):
@@ -142,7 +137,7 @@ class Search_Prefer_Local:
 
 
 class Pref:
-    def __init__(self, max_step=5, tools=[]):
+    def __init__(self, max_step=3, tools=[]):
 
         self.tools = tools
         self.max_step = max_step
@@ -287,7 +282,7 @@ if __name__ == "__main__":
             return [raw_data[i] for i in match_id[0]]
 
 
-    if "gpt" in args.model or args.model in ["glm4-plus"]:
+    if "gpt" in args.model or args.model in ["glm-4-plus"]:
         from utils import api_gen
         call_llm = call_api
     else:

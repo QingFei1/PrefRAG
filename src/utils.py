@@ -16,6 +16,7 @@ os.environ['OPENAI_BASE_URL'] = config["model"]["OPENAI_BASE_URL"]
 client = OpenAI()
 
 def api_gen(model,messages,temperature=0.1,top_p=0.9,stop=None):
+    global client
     try:
         # If your API supports unified OpenAI protocol calls (including GLM models), comment this out
         if "glm" in model:

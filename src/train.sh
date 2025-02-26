@@ -4,7 +4,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun  --nnodes=1 --nproc_per_node=8 --m
     --trust_remote_code \
     --max_length 8192 \
     --max_prompt_length 8000 \
-    --output_dir ../ckpt_glm4-plus/train/glm \
+    --output_dir ../ckpt_glm-4-plus/train/glm \
     --save_steps 500 \
     --gradient_accumulation_steps 1 \
     --per_device_train_batch_size 1 \
@@ -12,7 +12,7 @@ CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 torchrun  --nnodes=1 --nproc_per_node=8 --m
     --learning_rate 5e-7 \
     --logging_strategy steps \
     --logging_steps 100 \
-    --logging_dir ../ckpt_glm4-plus/train/glm \
+    --logging_dir ../ckpt_glm-4-plus/train/glm \
     --bf16 True \
     --num_train_epochs 1 \
     --report_to "tensorboard" \
