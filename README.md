@@ -75,7 +75,7 @@ bash train.sh
 ```bash
 python main.py --method prefrag --retrieve_top_k 5 --dataset musique  --model gpt-4o-mini-2024-07-18 --retrieve_method es
 ```
-The inference process and evaluation results can be found in the output directory.
+The inference process and evaluation results can be found in the `output/` directory.
 
 
 ### Evaluation Result on Each Dataset
