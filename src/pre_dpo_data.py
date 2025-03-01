@@ -21,7 +21,7 @@ parser.add_argument("--output_path", type=str, default="../data/dpo_data", help=
 parser.add_argument("--num_samples", type=int, default=15000, help="Total number of samples to generate")
 parser.add_argument("--per_data_gen_num", type=int, default=9, help="Number of different outputs to generate for each input sample")
 parser.add_argument("--model", type=str, choices=["glm4-9b-chat"], default="glm4-9b-chat", help="Model used for generating answers")
-parser.add_argument("--score_model", type=str, choices=["gpt-4o-mini-2024-07-18", "glm-4-plus"], default="glm-4-plus", help="Model used to select chosen/rejected pairs for DPO training")
+parser.add_argument("--evaluator_model", type=str, choices=["gpt-4o-mini-2024-07-18", "glm-4-plus"], default="glm-4-plus", help="Model used to select chosen/rejected pairs for DPO training")
 parser.add_argument("--gpu_memory_utilization", type=float, default=0.5, help="Fraction of GPU memory to be utilized")
 parser.add_argument("--device", type=str, default="0,1,2,3,4,5,6,7", help="GPU device IDs for parallel processing")
 args = parser.parse_args()
@@ -30,7 +30,7 @@ prefrag = Pref(tools=[Search_Engine], max_step=3)
 @retry(Exception, delay=1, backoff=2, max_delay=60, jitter=(1, 10))
 def call_api(prompt):
     messages=[{"role": "user", "content": prompt}]
-    result = api_gen(args.score_model, messages, temperature=0.1, top_p=0.9)
+    result = api_gen(args.evaluator_model, messages, temperature=0.1, top_p=0.9)
     assert result is not None
     return result
 
@@ -225,5 +225,5 @@ if __name__ == "__main__":
     with open('../config/config.yaml', 'r') as f:
         config = yaml.safe_load(f)
     answer_format = config["prompt"]["answer_format"]
-    output_file = os.path.join(args.output_path, f"generated_data-_num-{args.num_samples}_para-{args.per_data_gen_num}-{args.model}-max_step{prefrag.max_step}-{args.score_model}-{current_date}.jsonl")
+    output_file = os.path.join(args.output_path, f"generated_data-_num-{args.num_samples}_para-{args.per_data_gen_num}-{args.model}-max_step{prefrag.max_step}-{args.evaluator_model}-{current_date}.jsonl")
     main()

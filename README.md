@@ -36,20 +36,20 @@ tar -xzf elasticsearch-7.10.2-linux-x86_64.tar.gz
 cd elasticsearch-7.10.2/
 ./bin/elasticsearch # Start the server
 ```
-2. Build document index:
+2. Create document index:
 ```bash
 # Take MusiQue dataset as an example
-cd src/build_index/es
+cd src/create_index/es
 python index_musique.py
 ```
 
 **Dense Retriever**
 Based on bge-large-en-v1.5 model
 1. Download the [bge-large-en-v1.5](https://huggingface.co/BAAI/bge-large-en-v1.5) model
-2. Build document embedding index:
+2. Create document embedding index:
 ```bash
 # Take MusiQue dataset as an example
-cd src/build_index/emb
+cd src/create_index/emb
 python index.py --dataset musique
 ```
 
@@ -60,7 +60,7 @@ python index.py --dataset musique
 1. Prepare DPO training dataset:
 ```bash
 # Generate DPO training data with specified dataset and device
-python pre_dpo_data.py --output_path ../data/dpo_data --score_model glm-4-plus --device 0,1,2,3
+python pre_dpo_data.py --output_path ../data/dpo_data --evaluator_model glm-4-plus --device 0,1,2,3
 
 # After data generation, use process_data.ipynb to customize the proportion of different data types in the generated training set
 ```

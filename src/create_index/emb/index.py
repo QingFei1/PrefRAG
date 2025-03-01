@@ -56,7 +56,7 @@ def split_text(data):
     contents = [node.text for node in nodes]
     return contents
 
-def build_index(embeddings, vectorstore_path):
+def create_index(embeddings, vectorstore_path):
     dimension = embeddings.shape[1]
     index = faiss.IndexFlatIP(dimension)
     index.add(embeddings)
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     model = SentenceTransformer(config["model"][args.model], device=args.device)
     vectorstore_path = f"../../../data/corpus/{args.dataset}/{args.dataset}.index"
     print("loading document ...")
-    build_data = []
+    create_data = []
     start = time.time()
 
     if args.dataset == "bioasq":
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         for filepath in tqdm(jsonl_files):
             with open(filepath, "r") as f:
                 for line in f:
-                    build_data.append(json.loads(line.strip()))
+                    create_data.append(json.loads(line.strip()))
 
     elif args.dataset == "2wikimultihopqa":
         train = json.load(open("../../../data/corpus/2wikimultihopqa/train.json", "r"))
@@ -90,7 +90,7 @@ if __name__ == "__main__":
             for title, sentences in item["context"]:
                 para = " ".join(sentences)
                 data[para] = title
-        build_data = [
+        create_data = [
             {"id": i, "content": text, "title": title}
             for i, (text, title) in enumerate(data.items())
         ]
@@ -119,7 +119,7 @@ if __name__ == "__main__":
         pool = Pool()
 
         for result in tqdm(pool.imap(generate_indexing_queries_from_bz2, filelist), total=len(filelist)):
-            build_data.extend(result)
+            create_data.extend(result)
     elif args.dataset == "musique":
         train = [
             json.loads(line.strip())
@@ -149,20 +149,20 @@ if __name__ == "__main__":
             for p in item["paragraphs"]:
                 stamp = p["title"] + " " + p["paragraph_text"]
                 if not stamp in hist:
-                    build_data.append(
+                    create_data.append(
                         {"id": tot, "content": p["paragraph_text"], "title": p["title"]}
                     )
                     hist.add(stamp)
                     tot += 1
 
-        print("Num:",len(build_data))
-        contents=split_text(build_data)
+        print("Num:",len(create_data))
+        contents=split_text(create_data)
         contents = list(set(contents))
         print("Generating embeddings ...",len(contents))
         embeddings = model.encode(contents, batch_size=1200,show_progress_bar=True)
         with open(f"../../../data/corpus/{args.dataset}/chunk.json", "w", encoding="utf-8") as fout:
             json.dump(contents, fout, ensure_ascii=False)
-    print("Building index ...",len(embeddings))
-    build_index(embeddings, vectorstore_path)
+    print("Creating index ...",len(embeddings))
+    create_index(embeddings, vectorstore_path)
     end = time.time()
     print("speed time",end-start)

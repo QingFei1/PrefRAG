@@ -37,11 +37,11 @@ def main(args):
     datadir = "../../../data/corpus/bioasq/chunk"
     jsonl_files = glob.glob(os.path.join(datadir, "*.jsonl"))
 
-    build_data = []
+    create_data = []
     for filepath in jsonl_files:
         with open(filepath, "r") as f:
             for line in f:
-                build_data.append(json.loads(line.strip()))
+                create_data.append(json.loads(line.strip()))
     if not args.dry:
         if es.indices.exists(index=INDEX_NAME):
             es.indices.delete(index=INDEX_NAME, ignore=[400, 403])
@@ -80,7 +80,7 @@ def main(args):
 
     print("Making indexing queries...")
     all_queries = []
-    for item in tqdm(build_data):
+    for item in tqdm(create_data):
         all_queries.append(process_line(item))
 
     count = sum(len(queries.split("\n")) for queries in all_queries) // 2

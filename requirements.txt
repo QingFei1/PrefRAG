@@ -2,6 +2,7 @@ openai
 zhipuai
 tiktoken
 backoff
+tqdm
 transformers==4.47.1
 torch==2.4.0
 accelerate

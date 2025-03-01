@@ -48,7 +48,7 @@ def call_api(prompt,stop=None):
 
 
 
-def call_local(prompt,stop=None):
+def call_vllm(prompt,stop=None):
 
     if "llama" in args.model:
         model_template = f"<|start_header_id|>user<|end_header_id|>\n\n{prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     else:
         llm = LLM(model=config["model"][args.model], tensor_parallel_size=1, trust_remote_code=True, dtype='bfloat16', gpu_memory_utilization=args.gpu_memory_utilization)
 
-        call_llm = call_local
+        call_llm = call_vllm
 
     prefrag=Pref(tools=[Search_Engine],max_step=args.max_step)
 
